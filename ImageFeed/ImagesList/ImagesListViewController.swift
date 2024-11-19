@@ -1,7 +1,6 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
-    private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private var photosName = [String]()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -10,11 +9,15 @@ final class ImagesListViewController: UIViewController {
         return formatter
     }()
 
-    @IBOutlet private var tableView: UITableView!
+    private lazy var tableView = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        
+        view.backgroundColor = UIColor(named: "YP Black")
+        tableView.backgroundColor = UIColor(named: "YP Black")
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -22,24 +25,19 @@ final class ImagesListViewController: UIViewController {
         
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        
+        setupConstraints()
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showSingleImageSegueIdentifier {
-            guard
-                let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
-            else {
-                assertionFailure("Invalid segue destination")
-                return
-            }
-
-            let image = UIImage(named: photosName[indexPath.row])
-            viewController.image = image
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    private func setupConstraints() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
     }
 }
 
@@ -69,18 +67,19 @@ extension ImagesListViewController {
             return
         }
 
-        cell.cellImage.image = image
-        cell.dateLabel.text = dateFormatter.string(from: Date())
-
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "favoritesActive") : UIImage(named: "favoritesNoActive")
-        cell.favoritesButton.setImage(likeImage, for: .normal)
+        cell.setCellImage(image: image)
+        cell.setDateLabel(date: dateFormatter.string(from: Date()))
+        cell.setFavoritesButtonState(isActive: indexPath.row % 2 == 0)
     }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+        let viewController = SingleImageViewController()
+        viewController.modalPresentationStyle = .fullScreen
+        let image = UIImage(named: photosName[indexPath.row])
+        viewController.image = image
+        present(viewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
