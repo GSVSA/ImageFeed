@@ -29,6 +29,10 @@ final class SingleImageViewController: UIViewController {
         return button
     }()
     
+//    func setImageURL(_ url: URL) {
+//        imageView.kf.setImage(with: url, placeholder: UIImage(named: "stubImage"))
+//    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         scrollView.delegate = self

@@ -11,8 +11,8 @@ struct Photo {
 }
 
 struct UrlsResult: Codable {
-    let thumb: URL
-    let full: URL
+    let thumb: String
+    let full: String
 }
 
 struct PhotosResult: Codable {
@@ -37,7 +37,7 @@ final class ImagesListService {
     
     func fetchPhotosNextPage() {
         let nextPage = (lastLoadedPage ?? 0) + 1
-
+        print("fetchPhotosNextPage: \(nextPage)")
         apiService.fetch(
             getURLRequest(nextPage),
             nil
@@ -87,8 +87,8 @@ final class ImagesListService {
             size: .init(width: photo.width, height: photo.height),
             createdAt: dateFormatter.date(from: photo.createdAt),
             welcomeDescription: photo.description,
-            thumbImageURL: photo.urls.thumb.absoluteString,
-            fullImageURL: photo.urls.full.absoluteString,
+            thumbImageURL: photo.urls.thumb,
+            fullImageURL: photo.urls.full,
             isLiked: photo.likedByUser
         )
     }

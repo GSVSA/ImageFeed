@@ -2,13 +2,17 @@ import UIKit
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
-
+    
+    private lazy var cellImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "stubImage")
+        return imageView
+    }()
     private lazy var favoritesButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "favoritesNoActive"), for: .normal)
         return button
     }()
-    private lazy var cellImage = UIImageView()
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
@@ -34,12 +38,13 @@ final class ImagesListCell: UITableViewCell {
         gradientLayer.frame = backgroundLabel.bounds
     }
     
-    func setCellImage(image: UIImage) {
-        cellImage.image = image
+    func setCellImage(_ imageView: UIImageView) {
+        cellImage = imageView
+//        cellImage.backgroundColor = .white.withAlphaComponent(0.5)
     }
     
-    func setDateLabel(date: String) {
-        dateLabel.text = date
+    func setDateLabel(date: Date) {
+        dateLabel.text = date.dateTimeString
     }
     
     func setFavoritesButtonState(isActive: Bool) {
@@ -47,6 +52,11 @@ final class ImagesListCell: UITableViewCell {
             ? UIImage(named: "favoritesActive")
             : UIImage(named: "favoritesNoActive")
         favoritesButton.setImage(likeImage, for: .normal)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellImage.kf.cancelDownloadTask()
     }
     
     private func configUI() {

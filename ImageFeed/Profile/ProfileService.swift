@@ -19,7 +19,6 @@ final class ProfileService {
             getURLRequest(),
             completion
         ) { [weak self] (data: ProfileResponseBody) in
-            print(data)
             let profileData = Profile(
                 username: data.username,
                 name: data.name,
