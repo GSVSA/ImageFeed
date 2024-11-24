@@ -1,9 +1,17 @@
 import Foundation
+import SwiftKeychainWrapper
 
 final class OAuthTokenStorage {
+    private let tokenKey = "oauthAccessToken"
+    
     var token: String? {
-        get { UserDefaults.standard.string(forKey: "oauthAccessToken") }
-        set { UserDefaults.standard.setValue(newValue, forKey: "oauthAccessToken") }
+        get { KeychainWrapper.standard.string(forKey: tokenKey) }
+        set {
+            guard let newValue else {
+                KeychainWrapper.standard.removeObject(forKey: tokenKey)
+                return
+            }
+            KeychainWrapper.standard.set(newValue, forKey: tokenKey) }
     }
     
     var isAuthorized: Bool { token != nil }
