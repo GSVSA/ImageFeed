@@ -11,4 +11,5 @@ enum Constants {
     static let authPath = "/oauth/authorize"
     static let profilePath = "/me"
     static let profileImagePath = "/users"
+    static let images = "/photos"
 }
