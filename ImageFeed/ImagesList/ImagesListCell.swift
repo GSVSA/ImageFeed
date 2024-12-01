@@ -1,16 +1,18 @@
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
+    weak var delegate: ImagesListCellDelegate?
     
-    private lazy var cellImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "stubImage")
-        return imageView
-    }()
+    private lazy var cellImage = UIImageView()
+    private lazy var gradientLayer = CAGradientLayer()
+    private lazy var backgroundLabel = UIView()
+
     private lazy var favoritesButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "favoritesNoActive"), for: .normal)
+        button.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
         return button
     }()
     private lazy var dateLabel: UILabel = {
@@ -19,9 +21,6 @@ final class ImagesListCell: UITableViewCell {
         label.font = .systemFont(ofSize: 13)
         return label
     }()
-    
-    private lazy var gradientLayer = CAGradientLayer()
-    private lazy var backgroundLabel = UIView()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -38,25 +37,36 @@ final class ImagesListCell: UITableViewCell {
         gradientLayer.frame = backgroundLabel.bounds
     }
     
-    func setCellImage(_ imageView: UIImageView) {
-        cellImage = imageView
-//        cellImage.backgroundColor = .white.withAlphaComponent(0.5)
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellImage.kf.cancelDownloadTask()
     }
     
-    func setDateLabel(date: Date) {
-        dateLabel.text = date.dateTimeString
+    func setImageURL(_ imageURL: URL, completion: @Sendable @escaping (Result<RetrieveImageResult, KingfisherError>) -> Void) {
+        cellImage.kf.indicatorType = .activity
+        cellImage.kf.setImage(
+            with: imageURL,
+            placeholder: UIImage(named: "stubImage"),
+            options: [],
+            completionHandler: completion
+        )
+            
     }
     
-    func setFavoritesButtonState(isActive: Bool) {
-        let likeImage = isActive
+    func setDateLabel(date: String) {
+        dateLabel.text = date
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let likeImage = isLiked
             ? UIImage(named: "favoritesActive")
             : UIImage(named: "favoritesNoActive")
         favoritesButton.setImage(likeImage, for: .normal)
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        cellImage.kf.cancelDownloadTask()
+    @objc
+    private func likeButtonClicked() {
+        delegate?.imageListCellDidTapLike(self)
     }
     
     private func configUI() {

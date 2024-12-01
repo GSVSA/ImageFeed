@@ -54,18 +54,18 @@ final class WebViewViewController: UIViewController {
     }
     
     private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: Constants.authBaseURL) else {
+        guard var urlComponents = URLComponents(string: URLPaths.authBaseURL) else {
             print("ERROR: URLComponents")
             return
         }
         
-        urlComponents.path = Constants.authPath
+        urlComponents.path = URLPaths.authPath
 
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_id", value: URLPaths.accessKey),
+            URLQueryItem(name: "redirect_uri", value: URLPaths.redirectURI),
             URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: Constants.accessScope)
+            URLQueryItem(name: "scope", value: URLPaths.accessScope)
         ]
 
         guard let url = urlComponents.url else {
