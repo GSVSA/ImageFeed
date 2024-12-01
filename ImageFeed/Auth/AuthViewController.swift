@@ -89,13 +89,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     private func showAlertError() {
-        let alertModel = AlertModel(
-            title: "Что-то пошло не так(",
-            message: "Не удалось войти в систему",
-            buttonText: "Ок",
-            completion: nil
-        )
-        let presenter = AlertPresenter(model: alertModel, delegate: self)
+        let presenter = AlertPresenter(message: "Не удалось войти в систему", delegate: self)
         presenter.present()
     }
 }

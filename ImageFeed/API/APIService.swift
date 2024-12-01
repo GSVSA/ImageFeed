@@ -11,7 +11,7 @@ final class APIService {
         selector: @escaping (DecodableResponse) -> R
     ) {
         assert(Thread.isMainThread)
-        task?.cancel()
+        if let task { return }
         
         guard
             let token = tokenStorage.token,
