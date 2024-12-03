@@ -1,23 +1,26 @@
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
+    weak var delegate: ImagesListCellDelegate?
+    
+    private lazy var cellImage = UIImageView()
+    private lazy var gradientLayer = CAGradientLayer()
+    private lazy var backgroundLabel = UIView()
 
     private lazy var favoritesButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "favoritesNoActive"), for: .normal)
+        button.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
         return button
     }()
-    private lazy var cellImage = UIImageView()
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = .systemFont(ofSize: 13)
         return label
     }()
-    
-    private lazy var gradientLayer = CAGradientLayer()
-    private lazy var backgroundLabel = UIView()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -34,19 +37,36 @@ final class ImagesListCell: UITableViewCell {
         gradientLayer.frame = backgroundLabel.bounds
     }
     
-    func setCellImage(image: UIImage) {
-        cellImage.image = image
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellImage.kf.cancelDownloadTask()
+    }
+    
+    func setImageURL(_ imageURL: URL, completion: @Sendable @escaping (Result<RetrieveImageResult, KingfisherError>) -> Void) {
+        cellImage.kf.indicatorType = .activity
+        cellImage.kf.setImage(
+            with: imageURL,
+            placeholder: UIImage(named: "stubImage"),
+            options: [],
+            completionHandler: completion
+        )
+            
     }
     
     func setDateLabel(date: String) {
         dateLabel.text = date
     }
     
-    func setFavoritesButtonState(isActive: Bool) {
-        let likeImage = isActive
+    func setIsLiked(_ isLiked: Bool) {
+        let likeImage = isLiked
             ? UIImage(named: "favoritesActive")
             : UIImage(named: "favoritesNoActive")
         favoritesButton.setImage(likeImage, for: .normal)
+    }
+    
+    @objc
+    private func likeButtonClicked() {
+        delegate?.imageListCellDidTapLike(self)
     }
     
     private func configUI() {

@@ -3,14 +3,14 @@ import Kingfisher
 
 final class ProfileViewController: UIViewController {
     private let profileService = ProfileService.shared
-    static let profileImageService = ProfileImageService.shared
+    private let profileImageService = ProfileImageService.shared
     private let tokenStorage = OAuthTokenStorage()
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var imageView: UIImageView = {
         let image = UIImage(named: "placeholderImage")
         let imageView = UIImageView(image: image)
-        imageView.layer.cornerRadius = 35
+        imageView.layer.cornerRadius = imageView.frame.height / 2
         imageView.layer.masksToBounds = true
         return imageView
     }()
@@ -37,21 +37,20 @@ final class ProfileViewController: UIViewController {
     }()
 
     private lazy var exitButton: UIButton = {
+        guard let buttonImage = UIImage(systemName: "ipad.and.arrow.forward") else { return UIButton() }
         let button = UIButton.systemButton(
-            with: UIImage(systemName: "ipad.and.arrow.forward")!,
-            target: ProfileViewController.self,
-            action: nil
+            with: buttonImage,
+            target: self,
+            action: #selector(exitButtonClicked)
         )
         button.tintColor = UIColor(named: "YP Red")
         return button
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor(named: "YP Black")
         setupConstraints()
-        guard let profileData = profileService.profile else { return }
-        updateLabels(profileData)
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -63,6 +62,29 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         updateAvatar()
+        
+        guard let profileData = profileService.profile else { return }
+        updateLabels(profileData)
+    }
+    
+    @objc
+    private func exitButtonClicked() {
+        let alertModel = AlertModel(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            buttons: [
+                .init(title: "Да", completion: logout),
+                .init(title: "Нет", completion: nil),
+            ]
+        )
+        let presenter = AlertPresenter(model: alertModel, delegate: self)
+        presenter.present()
+    }
+    
+    private func logout() {
+        ProfileLogoutService.shared.logout()
+        guard let window = UIApplication.shared.windows.first else { return }
+        window.rootViewController = SplashViewController()
     }
     
     private func updateAvatar() {

@@ -15,4 +15,8 @@ final class OAuthTokenStorage {
     }
     
     var isAuthorized: Bool { token != nil }
+    
+    func reset() {
+        token = nil
+    }
 }
