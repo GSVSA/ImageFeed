@@ -36,9 +36,8 @@ final class SplashViewController: UIViewController {
     }
     
     private func showTabBarController() {
-        let tabBarController = TabBarController()
-        tabBarController.modalPresentationStyle = .fullScreen
-        self.present(tabBarController, animated: true)
+        guard let window = UIApplication.shared.windows.first else { return }
+        window.rootViewController = TabBarController()
     }
     
     private func showNavigationController() {

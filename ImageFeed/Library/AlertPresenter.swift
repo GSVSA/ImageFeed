@@ -1,17 +1,26 @@
 import UIKit
 
-struct AlertModel {
+struct AlertAction {
     let title: String
-    let message: String
-    let buttonText: String
     let completion: (() -> Void)?
 }
 
+struct AlertModel {
+    let title: String
+    let message: String?
+    let buttons: [AlertAction]?
+}
+
+enum AlertConstants {
+    static let title = "Что-то пошло не так("
+    static let message = "Не удалось поставить лайк"
+    static let mainButtonText = "Ок"
+}
+
 final class AlertPresenter {
-    private let alert: UIAlertController
-    private let action: UIAlertAction
-    
     weak var delegate: UIViewController?
+
+    private let alert: UIAlertController
     
     init(model: AlertModel, delegate: UIViewController? = nil) {
         self.delegate = delegate
@@ -22,10 +31,25 @@ final class AlertPresenter {
             preferredStyle: .alert
         )
         
-        action = UIAlertAction(title: model.buttonText, style: .default) { _ in
-            model.completion?()
+        model.buttons?.forEach { button in
+            let action = UIAlertAction(title: button.title, style: .default) { _ in
+                button.completion?()
+            }
+            
+            alert.addAction(action)
         }
+    }
+    
+    init(message: String, delegate: UIViewController? = nil) {
+        self.delegate = delegate
         
+        alert = UIAlertController(
+            title: AlertConstants.title,
+            message: message,
+            preferredStyle: .alert
+        )
+        
+        let action = UIAlertAction(title: AlertConstants.mainButtonText, style: .default)
         alert.addAction(action)
     }
     

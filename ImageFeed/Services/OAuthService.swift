@@ -1,9 +1,5 @@
 import Foundation
 
-private struct OAuthTokenResponseBody: Codable {
-    let accessToken: String
-}
-
 final class OAuthService {
     static let shared = OAuthService()
     private let oAuthStorage = OAuthTokenStorage()
@@ -30,7 +26,7 @@ final class OAuthService {
             return
         }
         
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponse, Error>) in
             switch result {
             case .success(let data):
                 let accessToken = data.accessToken
@@ -49,16 +45,16 @@ final class OAuthService {
     }
     
     private func getRequestURL(code: String) -> URLRequest? {
-        guard var urlComponents = URLComponents(string: Constants.authBaseURL) else {
+        guard var urlComponents = URLComponents(string: URLPaths.authBaseURL) else {
             assertionFailure("Failed to create URL")
             return nil
         }
 
-        urlComponents.path = Constants.tokenPath
+        urlComponents.path = URLPaths.tokenPath
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_id", value: URLPaths.accessKey),
+            URLQueryItem(name: "client_secret", value: URLPaths.secretKey),
+            URLQueryItem(name: "redirect_uri", value: URLPaths.redirectURI),
             URLQueryItem(name: "code", value: code),
             URLQueryItem(name: "grant_type", value: "authorization_code"),
         ]

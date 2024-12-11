@@ -1,11 +1,5 @@
 import Foundation
 
-private struct ProfileResponseBody: Codable {
-    let username: String
-    let name: String
-    let bio: String?
-}
-
 final class ProfileService {
     static let shared = ProfileService()
 
@@ -18,8 +12,7 @@ final class ProfileService {
         apiService.fetch(
             getURLRequest(),
             completion
-        ) { [weak self] (data: ProfileResponseBody) in
-            print(data)
+        ) { [weak self] (data: ProfileResponse) in
             let profileData = Profile(
                 username: data.username,
                 name: data.name,
@@ -31,10 +24,14 @@ final class ProfileService {
         }
     }
     
+    func reset() {
+        profile = nil
+    }
+    
     private func getURLRequest() -> URLRequest? {
         guard
-            let baseUrl = Constants.defaultBaseURL,
-            let url = URL(string: Constants.profilePath, relativeTo: baseUrl)
+            let baseUrl = URLPaths.defaultBaseURL,
+            let url = URL(string: URLPaths.profilePath, relativeTo: baseUrl)
         else {
             assertionFailure("Failed to create URL")
             return nil

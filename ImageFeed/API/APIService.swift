@@ -7,18 +7,18 @@ final class APIService {
     
     func fetch<DecodableResponse: Decodable, R>(
         _ urlRequest: URLRequest?,
-        _ completion: @escaping (Result<R, Error>) -> Void,
+        _ completion: ((Result<R, Error>) -> Void)?,
         selector: @escaping (DecodableResponse) -> R
     ) {
         assert(Thread.isMainThread)
-        task?.cancel()
+        guard task == nil else { return }
         
         guard
             let token = tokenStorage.token,
             var request = urlRequest
         else {
             assertionFailure("Request is not exist")
-            completion(.failure(NetworkError.invalidRequest))
+            completion?(.failure(NetworkError.invalidRequest))
             return
         }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -29,9 +29,9 @@ final class APIService {
             switch result {
             case .success(let data):
                 let selectedData = selector(data)
-                completion(.success(selectedData))
+                completion?(.success(selectedData))
             case .failure(let error):
-                completion(.failure(error))
+                completion?(.failure(error))
             }
             self.task = nil
         }
