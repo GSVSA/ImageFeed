@@ -19,12 +19,17 @@ final class AuthViewController: UIViewController {
         button.backgroundColor = .white
         button.tintColor = UIColor(named: "YP Black")
         button.layer.cornerRadius = 16
+        button.accessibilityIdentifier = "Authenticate"
         return button
     }()
     
     @objc
     private func loginAction() {
         let webViewViewController = WebViewViewController()
+        let authHelper = AuthHelper()
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
         webViewViewController.delegate = self
         navigationController?.pushViewController(webViewViewController, animated: true)
     }

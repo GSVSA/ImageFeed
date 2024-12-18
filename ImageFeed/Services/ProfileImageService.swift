@@ -1,8 +1,15 @@
 import Foundation
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol {
+    var didChangeNotification: Notification.Name { get }
+    var avatarUrl: String? { get }
+    func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void)
+    func reset()
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     static let shared = ProfileImageService()
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     private let apiService = APIService()
     private(set) var avatarUrl: String?
@@ -15,12 +22,15 @@ final class ProfileImageService {
             completion
         ) { [weak self] (data: UserResponse) in
             let avatarUrl = data.profileImage.small.absoluteString
-            self?.avatarUrl = avatarUrl
-            NotificationCenter.default.post(
-                name: ProfileImageService.didChangeNotification,
-                object: self,
-                userInfo: ["URL": avatarUrl]
-            )
+            
+            if let self {
+                self.avatarUrl = avatarUrl
+                NotificationCenter.default.post(
+                    name: self.didChangeNotification,
+                    object: self,
+                    userInfo: ["URL": avatarUrl]
+                )
+            }
             return avatarUrl
          }
     }

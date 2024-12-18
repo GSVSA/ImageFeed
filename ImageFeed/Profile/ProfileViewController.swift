@@ -1,11 +1,15 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
-    private let profileService = ProfileService.shared
-    private let profileImageService = ProfileImageService.shared
-    private let tokenStorage = OAuthTokenStorage()
-    private var profileImageServiceObserver: NSObjectProtocol?
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func setAvatarURL(_ url: URL)
+    func setProfileData(_ profile: Profile)
+    func navigateToRoot()
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfilePresenterProtocol?
     
     private lazy var imageView: UIImageView = {
         let image = UIImage(named: "placeholderImage")
@@ -44,6 +48,7 @@ final class ProfileViewController: UIViewController {
             action: #selector(exitButtonClicked)
         )
         button.tintColor = UIColor(named: "YP Red")
+        button.accessibilityIdentifier = "logout button"
         return button
     }()
     
@@ -52,55 +57,38 @@ final class ProfileViewController: UIViewController {
         self.view.backgroundColor = UIColor(named: "YP Black")
         setupConstraints()
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
-        
-        guard let profileData = profileService.profile else { return }
-        updateLabels(profileData)
+        presenter?.viewDidLoad()
     }
     
     @objc
     private func exitButtonClicked() {
         let alertModel = AlertModel(
+            identifier: "logout",
             title: "Пока, пока!",
             message: "Уверены, что хотите выйти?",
             buttons: [
-                .init(title: "Да", completion: logout),
+                .init(title: "Да", completion: presenter?.logout),
                 .init(title: "Нет", completion: nil),
             ]
         )
         let presenter = AlertPresenter(model: alertModel, delegate: self)
         presenter.present()
     }
-    
-    private func logout() {
-        ProfileLogoutService.shared.logout()
+
+    func navigateToRoot() {
         guard let window = UIApplication.shared.windows.first else { return }
         window.rootViewController = SplashViewController()
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarUrl,
-            let url = URL(string: profileImageURL)
-        else { return }
-        
+    func setAvatarURL(_ url: URL) {
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
             placeholder: UIImage(named: "placeholderImage")
         )
     }
-    
-    private func updateLabels(_ profile: Profile) {
+
+    func setProfileData(_ profile: Profile) {
         nameLabel.text = profile.name
         nickNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio

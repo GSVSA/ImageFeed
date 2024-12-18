@@ -45,7 +45,7 @@ final class OAuthService {
     }
     
     private func getRequestURL(code: String) -> URLRequest? {
-        guard var urlComponents = URLComponents(string: URLPaths.authBaseURL) else {
+        guard var urlComponents = URLComponents(string: URLPaths.authBaseURLString) else {
             assertionFailure("Failed to create URL")
             return nil
         }
