@@ -9,6 +9,9 @@ final class TabBarController: UITabBarController {
     
     private func setupTabItems() {
         let imagesListViewController = ImagesListViewController()
+        let imagesListPresenter = ImagesListPresenter(imagesListService: ImagesListService.shared)
+        imagesListViewController.presenter = imagesListPresenter
+        imagesListPresenter.view = imagesListViewController
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tabEditorialActive"),
@@ -16,6 +19,13 @@ final class TabBarController: UITabBarController {
         )
         
         let profileViewController = ProfileViewController()
+        let profilePresenter = ProfilePresenter(
+            profileService: ProfileService.shared,
+            profileImageService: ProfileImageService.shared,
+            profileLogoutService: ProfileLogoutService.shared
+        )
+        profileViewController.presenter = profilePresenter
+        profilePresenter.view = profileViewController
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tabProfileActive"),
