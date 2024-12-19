@@ -19,7 +19,6 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         tableView.backgroundColor = UIColor(named: "YP Black")
         tableView.delegate = self
         tableView.dataSource = self
-        
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         setupConstraints()
@@ -29,8 +28,8 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     
     func updateTable(oldCount: Int, newCount: Int) {
         tableView.performBatchUpdates {
-            let indexPaths = (oldCount..<newCount).map { i in
-                IndexPath(row: i, section: 0)
+            let indexPaths = (oldCount..<newCount).map { photoIndex in
+                IndexPath(row: photoIndex, section: 0)
             }
             tableView.insertRows(at: indexPaths, with: .automatic)
         }
@@ -66,10 +65,8 @@ extension ImagesListViewController: UITableViewDataSource {
 
         return imageListCell
     }
-}
 
-extension ImagesListViewController {
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         cell.delegate = self
         
         guard let config = presenter?.getConfigForCell(at: indexPath.row) else { return }

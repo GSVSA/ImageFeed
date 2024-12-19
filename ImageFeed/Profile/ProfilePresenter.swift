@@ -9,10 +9,10 @@ protocol ProfilePresenterProtocol: AnyObject {
 final class ProfilePresenter: ProfilePresenterProtocol {
     weak var view: ProfileViewControllerProtocol?
     
-    let profileService: ProfileServiceProtocol
-    let profileLogoutService: ProfileLogoutService
-    let profileImageService: ProfileImageServiceProtocol
-    var profileImageServiceObserver: NSObjectProtocol?
+    private let profileService: ProfileServiceProtocol
+    private let profileLogoutService: ProfileLogoutService
+    private let profileImageService: ProfileImageServiceProtocol
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     init(
         profileService: ProfileServiceProtocol,

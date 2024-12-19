@@ -29,7 +29,7 @@ final class SingleImageViewController: UIViewController {
     
     private func showError() {
         let alertModel = AlertModel(
-            identifier: nil,
+            identifier: Identifiers.singleImageAlertErrorLoadImage,
             title: "Что-то пошло не так. Попробовать ещё раз?",
             message: nil,
             buttons: [
@@ -45,7 +45,7 @@ final class SingleImageViewController: UIViewController {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "backward"), for: .normal)
         button.addTarget(self, action: #selector(didTabReturnButton), for: .touchUpInside)
-        button.accessibilityIdentifier = "return button"
+        button.accessibilityIdentifier = Identifiers.singleImageButtonReturn
         return button
     }()
     

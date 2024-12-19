@@ -45,6 +45,17 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
         webView.load(request)
     }
     
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
+    }
+
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
+        if isHidden {
+            progressView.progress = 0
+        }
+    }
+    
     private func setupConstraints() {
         [
             webView,
@@ -65,17 +76,6 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
-    
-    func setProgressValue(_ newValue: Float) {
-        progressView.progress = newValue
-    }
-
-    func setProgressHidden(_ isHidden: Bool) {
-        progressView.isHidden = isHidden
-        if isHidden {
-            progressView.progress = 0
-        }
-    }
 }
 
 // MARK: - extensions
@@ -86,7 +86,7 @@ extension WebViewViewController: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
-        if let code = code(from: navigationAction) {
+        if let code = getCode(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {
@@ -94,7 +94,7 @@ extension WebViewViewController: WKNavigationDelegate {
         }
     }
     
-    private func code(from navigationAction: WKNavigationAction) -> String? {
+    private func getCode(from navigationAction: WKNavigationAction) -> String? {
         if let url = navigationAction.request.url {
             return presenter?.code(from: url)
         }

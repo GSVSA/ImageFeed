@@ -48,7 +48,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             action: #selector(exitButtonClicked)
         )
         button.tintColor = UIColor(named: "YP Red")
-        button.accessibilityIdentifier = "logout button"
+        button.accessibilityIdentifier = Identifiers.profileButtonLogout
         return button
     }()
     
@@ -63,7 +63,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     @objc
     private func exitButtonClicked() {
         let alertModel = AlertModel(
-            identifier: "logout",
+            identifier: Identifiers.profileAlertConfirmLogout,
             title: "Пока, пока!",
             message: "Уверены, что хотите выйти?",
             buttons: [
