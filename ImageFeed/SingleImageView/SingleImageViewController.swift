@@ -29,6 +29,7 @@ final class SingleImageViewController: UIViewController {
     
     private func showError() {
         let alertModel = AlertModel(
+            identifier: Identifiers.singleImageAlertErrorLoadImage,
             title: "Что-то пошло не так. Попробовать ещё раз?",
             message: nil,
             buttons: [
@@ -44,6 +45,7 @@ final class SingleImageViewController: UIViewController {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "backward"), for: .normal)
         button.addTarget(self, action: #selector(didTabReturnButton), for: .touchUpInside)
+        button.accessibilityIdentifier = Identifiers.singleImageButtonReturn
         return button
     }()
     
@@ -152,9 +154,8 @@ extension SingleImageViewController: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         let newContentSize = scrollView.contentSize
         let visibleRectSize = scrollView.bounds.size
-        let x = (visibleRectSize.width - newContentSize.width) / 2
-        let y = (visibleRectSize.height - newContentSize.height) / 2
-        
+        let x = max((visibleRectSize.width - newContentSize.width) / 2, 0)
+        let y = max((visibleRectSize.height - newContentSize.height) / 2, 0)
         scrollView.contentInset = UIEdgeInsets(top: y, left: x, bottom: y, right: x)
     }
 }
