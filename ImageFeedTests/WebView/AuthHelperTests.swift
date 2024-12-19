@@ -1,6 +1,6 @@
 import Foundation
-import XCTest
 @testable import ImageFeed
+import XCTest
 
 final class AuthHelperTests: XCTestCase {
     func testAuthHelperAuthURL() {
@@ -9,7 +9,7 @@ final class AuthHelperTests: XCTestCase {
         let authHelper = AuthHelper(configuration: configuration)
         
         // when
-        let url = authHelper.authURL()
+        let url = authHelper.authURL
 
         guard let urlString = url?.absoluteString else {
             XCTFail("Auth URL is nil")
@@ -38,7 +38,7 @@ final class AuthHelperTests: XCTestCase {
         }
         
         // when
-        let code = AuthHelper().code(from: url)
+        let code = AuthHelper().getCode(from: url)
         
         // then
         XCTAssertEqual(code, testCodeValue)

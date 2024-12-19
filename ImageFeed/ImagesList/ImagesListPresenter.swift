@@ -18,8 +18,8 @@ protocol ImagesListPresenterProtocol: AnyObject {
 
 final class ImagesListPresenter: ImagesListPresenterProtocol {
     weak var view: ImagesListViewControllerProtocol?
-    let imagesListService: ImagesListServiceProtocol
-    var imagesListServiceObserver: NSObjectProtocol?
+    private let imagesListService: ImagesListServiceProtocol
+    private var imagesListServiceObserver: NSObjectProtocol?
     private(set) var photos: [Photo] = []
     
     init(imagesListService: ImagesListServiceProtocol) {
@@ -36,7 +36,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }()
     
     func viewDidLoad() {
-        
         imagesListService.fetchPhotosNextPage()
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: imagesListService.didChangeNotification,
@@ -63,7 +62,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func fetchNextPageIfAvailable(at index: Int) {
-        let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
+        let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
         guard !testMode else { return }
         if index + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()
