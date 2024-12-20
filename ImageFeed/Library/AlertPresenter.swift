@@ -6,6 +6,7 @@ struct AlertAction {
 }
 
 struct AlertModel {
+    let identifier: String?
     let title: String
     let message: String?
     let buttons: [AlertAction]?
@@ -15,6 +16,7 @@ enum AlertConstants {
     static let title = "Что-то пошло не так("
     static let message = "Не удалось поставить лайк"
     static let mainButtonText = "Ок"
+    static let identifier = "confirm alert"
 }
 
 final class AlertPresenter {
@@ -30,6 +32,8 @@ final class AlertPresenter {
             message: model.message,
             preferredStyle: .alert
         )
+        
+        alert.view.accessibilityIdentifier = model.identifier ?? AlertConstants.identifier
         
         model.buttons?.forEach { button in
             let action = UIAlertAction(title: button.title, style: .default) { _ in
@@ -50,6 +54,8 @@ final class AlertPresenter {
         )
         
         let action = UIAlertAction(title: AlertConstants.mainButtonText, style: .default)
+        
+        alert.view.accessibilityIdentifier = AlertConstants.identifier
         alert.addAction(action)
     }
     

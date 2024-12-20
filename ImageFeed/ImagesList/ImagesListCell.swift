@@ -13,6 +13,7 @@ final class ImagesListCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "favoritesNoActive"), for: .normal)
         button.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
+        button.accessibilityIdentifier = Identifiers.imagesCellFavoriteButton
         return button
     }()
     private lazy var dateLabel: UILabel = {
@@ -53,8 +54,8 @@ final class ImagesListCell: UITableViewCell {
             
     }
     
-    func setDateLabel(date: String) {
-        dateLabel.text = date
+    func setDateLabel(_ dateString: String) {
+        dateLabel.text = dateString
     }
     
     func setIsLiked(_ isLiked: Bool) {

@@ -1,8 +1,16 @@
 import Foundation
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var didChangeNotification: Notification.Name { get }
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+    func reset()
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     static let shared = ImagesListService()
-    static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
+    let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
@@ -26,7 +34,7 @@ final class ImagesListService {
             let photos = data.map(self.convert)
             self.photos.append(contentsOf: photos)
             NotificationCenter.default.post(
-                name: ImagesListService.didChangeNotification,
+                name: self.didChangeNotification,
                 object: self,
                 userInfo: ["ImagesListServiceDidChange": photos]
             )
@@ -104,7 +112,6 @@ final class ImagesListService {
             id: photo.id,
             size: .init(width: photo.width, height: photo.height),
             createdAt: dateFormatter.date(from: photo.createdAt ?? ""),
-            welcomeDescription: photo.description,
             thumbImageURL: URL(string: photo.urls.thumb),
             fullImageURL: URL(string: photo.urls.full),
             isLiked: photo.likedByUser
